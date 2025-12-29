@@ -1,0 +1,85 @@
+{% extends 'exam_user/base.html' %}
+{% block title %}Exam Results{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header text-center py-4
+                    {% if attempt.percentage >= attempt.exam.pass_percentage %}
+                        bg-success text-white
+                    {% else %}
+                        bg-danger text-white
+                    {% endif %}">
+                    <h2 class="mb-0">
+                        {% if attempt.percentage >= attempt.exam.pass_percentage %}
+                            <i class="fas fa-trophy fa-2x me-3"></i> Congratulations! You Passed!
+                        {% else %}
+                            <i class="fas fa-heart-broken fa-2x me-3"></i> Better Luck Next Time
+                        {% endif %}
+                    </h2>
+                </div>
+
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <h3 class="fw-bold">{{ attempt.exam.name }}</h3>
+                        <p class="text-muted">Completed on {{ attempt.end_time|date:"d M Y, H:i" }}</p>
+                    </div>
+
+                    <div class="row text-center mb-5">
+                        <div class="col-md-4">
+                            <div class="p-4 bg-light rounded shadow-sm">
+                                <p class="small text-muted mb-1">Your Score</p>
+                                <h2 class="text-primary fw-bold">{{ attempt.score }} / {{ attempt.total_marks }}</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-4 bg-light rounded shadow-sm">
+                                <p class="small text-muted mb-1">Percentage</p>
+                                <h2 class="fw-bold 
+                                    {% if attempt.percentage >= attempt.exam.pass_percentage %}
+                                        text-success
+                                    {% else %}
+                                        text-danger
+                                    {% endif %}">
+                                    {{ attempt.percentage|floatformat:1 }}%
+                                </h2>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-4 bg-light rounded shadow-sm">
+                                <p class="small text-muted mb-1">Attempt ID</p>
+                                <code class="fs-4 bg-white px-4 py-2 rounded shadow-sm">{{ attempt.attempt_id }}</code>
+                                <p class="small text-muted mt-2">Save this ID to view results later</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="text-center">
+                        <p><strong>Required to Pass:</strong> {{ attempt.exam.pass_percentage }}%</p>
+                        <p><strong>Status:</strong>
+                            {% if attempt.percentage >= attempt.exam.pass_percentage %}
+                                <span class="badge bg-success fs-5 px-4 py-2">PASSED</span>
+                            {% else %}
+                                <span class="badge bg-danger fs-5 px-4 py-2">FAILED</span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <a href="{% url 'exam_user:index' %}" class="btn btn-primary btn-lg px-5 me-3 shadow">
+                            <i class="fas fa-home me-2"></i> Back to Home
+                        </a>
+                        <a href="{% url 'exam_user:category_detail' attempt.exam.category.id %}" class="btn btn-outline-primary btn-lg px-5 shadow">
+                            <i class="fas fa-redo me-2"></i> Try Another Exam
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

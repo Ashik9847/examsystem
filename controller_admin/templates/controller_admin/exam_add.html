@@ -1,0 +1,55 @@
+{% extends 'controller_admin/base.html' %}
+{% block page_title %}Add Exam - {{ category.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-plus-circle me-2"></i> Create New Exam in "{{ category.name }}"
+                </h4>
+            </div>
+            <div class="card-body p-5">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label fw-bold">Exam Name</label>
+                            <input type="text" name="name" class="form-control form-control-lg" required>
+                        </div>
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label fw-bold">Description (Optional)</label>
+                            <textarea name="description" class="form-control" rows="4"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">Duration (minutes)</label>
+                            <input type="number" name="duration_minutes" class="form-control form-control-lg" min="1" required>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">Number of Questions to Show</label>
+                            <input type="number" name="number_of_questions" class="form-control form-control-lg" min="1" required>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">Start Date & Time</label>
+                            <input type="datetime-local" name="start_date" class="form-control form-control-lg" required>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">End Date & Time</label>
+                            <input type="datetime-local" name="end_date" class="form-control form-control-lg" required>
+                        </div>
+                        <div class="col-md-12 mb-4">
+                            <label class="form-label fw-bold">Pass Percentage (%)</label>
+                            <input type="number" name="pass_percentage" class="form-control form-control-lg" step="0.1" value="40.0" min="0" max="100">
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <a href="{% url 'controller_admin:category_detail' category.id %}" class="btn btn-secondary btn-lg me-3">Cancel</a>
+                        <button type="submit" class="btn btn-success btn-lg px-5">Create Exam</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

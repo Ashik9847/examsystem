@@ -1,0 +1,164 @@
+{% extends 'controller_admin/base.html' %}
+{% block page_title %}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-5">
+    <div>
+        <h3 class="fw-bold text-primary">{{ exam.name }}</h3>
+        <p class="lead text-muted">{{ exam.description|default:"No description provided." }}</p>
+
+        <div class="row g-4 mt-3">
+            <div class="col-md-3">
+                <small class="text-muted"><i class="fas fa-clock me-2"></i> Duration</small><br>
+                <strong class="fs-5">{{ exam.duration_minutes }} minutes</strong>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted"><i class="fas fa-question-circle me-2"></i> Questions to Show</small><br>
+                <strong class="fs-5">{{ exam.number_of_questions }}</strong>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted"><i class="fas fa-trophy me-2"></i> Pass Mark</small><br>
+                <strong class="fs-5">{{ exam.pass_percentage }}%</strong>
+            </div>
+            <div class="col-md-3">
+                <small class="text-muted"><i class="fas fa-calendar-alt me-2"></i> Active Period</small><br>
+                <strong class="fs-5">
+                    {{ exam.start_date|date:"d M Y, H:i" }}<br>
+                    to {{ exam.end_date|date:"d M Y, H:i" }}
+                </strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group-vertical btn-group-lg">
+        <a href="{% url 'controller_admin:question_add' exam.id %}" class="btn btn-success shadow mb-2">
+            <i class="fas fa-plus-circle me-2"></i> Add Question
+        </a>
+        <a href="{% url 'controller_admin:exam_edit' exam.id %}" class="btn btn-warning shadow mb-2">
+            <i class="fas fa-edit me-2"></i> Edit Exam
+        </a>
+        <a href="{% url 'controller_admin:exam_delete' exam.id %}" class="btn btn-danger shadow">
+            <i class="fas fa-trash me-2"></i> Delete Exam
+        </a>
+    </div>
+</div>
+
+<hr class="my-5 border-2">
+
+<!-- SINGLE QUESTION COUNT HEADER -->
+
+
+{% comment %} CLEAN & SIMPLE VERSION (RECOMMENDED) {% endcomment %}
+<h4 class="mb-4 fw-bold">
+    <i class="fas fa-list-ol me-2"></i>
+    Questions ({{ questions.count }} / {{ exam.number_of_questions }} added)
+    {% if questions.count < exam.number_of_questions %}
+        <span class="badge bg-warning text-dark ms-3">
+            Need {{ exam.number_of_questions|add:questions.count|add:"-"|add:questions.count }} more
+        </span>
+    {% elif questions.count > exam.number_of_questions %}
+        <span class="badge bg-info ms-3">
+            {{ questions.count|add:exam.number_of_questions|add:"-"|add:exam.number_of_questions }} extra
+        </span>
+    {% else %}
+        <span class="badge bg-success ms-3">Perfect match</span>
+    {% endif %}
+</h4>
+
+{% if questions %}
+    {% for question in questions %}
+    <div class="card shadow-sm mb-4 border-start border-primary border-5">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold">
+                Question {{ forloop.counter }}
+                <span class="badge bg-{% if question.option_type == 'image' %}danger{% else %}primary{% endif %} ms-2">
+                    {{ question.option_type|capfirst }}
+                </span>
+                <span class="badge bg-secondary ms-2">Marks: {{ question.marks }}</span>
+                <span class="badge bg-success ms-2">Correct: {{ question.correct_answer }}</span>
+            </h6>
+            <!-- SINGLE EDIT/DELETE BUTTON GROUP -->
+            <div class="btn-group">
+                <a href="{% url 'controller_admin:question_edit' question.id %}" class="btn btn-warning btn-sm">
+                    <i class="fas fa-edit me-1"></i> Edit
+                </a>
+                <a href="{% url 'controller_admin:question_delete' question.id %}" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash me-1"></i> Delete
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="lead mb-4">{{ question.question_text }}</p>
+
+            {% if question.option_type == 'text' %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <strong>A)</strong> {{ question.option_a|default:"—" }}
+                        {% if question.correct_answer == 'A' %}<i class="fas fa-check text-success ms-2"></i>{% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>B)</strong> {{ question.option_b|default:"—" }}
+                        {% if question.correct_answer == 'B' %}<i class="fas fa-check text-success ms-2"></i>{% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>C)</strong> {{ question.option_c|default:"—" }}
+                        {% if question.correct_answer == 'C' %}<i class="fas fa-check text-success ms-2"></i>{% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>D)</strong> {{ question.option_d|default:"—" }}
+                        {% if question.correct_answer == 'D' %}<i class="fas fa-check text-success ms-2"></i>{% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="row g-4 mt-4">
+                    {% if question.option_a_image %}
+                    <div class="col-md-6 text-center">
+                        <p><strong>A)</strong> {% if question.correct_answer == 'A' %}<i class="fas fa-check-circle text-success fs-3"></i>{% endif %}</p>
+                        <img src="{{ question.option_a_image.url }}" class="img-fluid rounded shadow-sm" style="max-height: 280px; object-fit: contain;">
+                    </div>
+                    {% endif %}
+                    {% if question.option_b_image %}
+                    <div class="col-md-6 text-center">
+                        <p><strong>B)</strong> {% if question.correct_answer == 'B' %}<i class="fas fa-check-circle text-success fs-3"></i>{% endif %}</p>
+                        <img src="{{ question.option_b_image.url }}" class="img-fluid rounded shadow-sm" style="max-height: 280px; object-fit: contain;">
+                    </div>
+                    {% endif %}
+                    {% if question.option_c_image %}
+                    <div class="col-md-6 text-center">
+                        <p><strong>C)</strong> {% if question.correct_answer == 'C' %}<i class="fas fa-check-circle text-success fs-3"></i>{% endif %}</p>
+                        <img src="{{ question.option_c_image.url }}" class="img-fluid rounded shadow-sm" style="max-height: 280px; object-fit: contain;">
+                    </div>
+                    {% endif %}
+                    {% if question.option_d_image %}
+                    <div class="col-md-6 text-center">
+                        <p><strong>D)</strong> {% if question.correct_answer == 'D' %}<i class="fas fa-check-circle text-success fs-3"></i>{% endif %}</p>
+                        <img src="{{ question.option_d_image.url }}" class="img-fluid rounded shadow-sm" style="max-height: 280px; object-fit: contain;">
+                    </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="card-footer bg-light">
+            <small class="text-muted">
+                Added: {{ question.created_at|date:"d M Y, H:i" }}
+            </small>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="text-center py-5 bg-light rounded-3 shadow">
+        <i class="fas fa-exclamation-triangle fa-5x text-warning mb-4"></i>
+        <h4>No questions added yet</h4>
+        <p class="lead text-muted">This exam is empty. Add questions to make it ready for students.</p>
+        <a href="{% url 'controller_admin:question_add' exam.id %}" class="btn btn-success btn-lg shadow mt-3">
+            <i class="fas fa-plus-circle me-2"></i> Add Your First Question
+        </a>
+    </div>
+{% endif %}
+
+<div class="text-center mt-5">
+    <a href="{% url 'controller_admin:category_detail' exam.category.id %}" class="btn btn-outline-primary btn-lg">
+        <i class="fas fa-arrow-left me-2"></i> Back to Category
+    </a>
+</div>
+{% endblock %}

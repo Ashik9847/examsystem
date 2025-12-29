@@ -1,0 +1,110 @@
+{% extends 'controller_admin/base.html' %}
+{% block page_title %}Add Question - {{ exam.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-question-circle me-2"></i> Add New Question to "{{ exam.name }}"
+                </h4>
+            </div>
+            <div class="card-body p-5">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Question Text</label>
+                        <textarea name="question_text" class="form-control form-control-lg" rows="4" required></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Option Type</label>
+                        <select name="option_type" id="option_type" class="form-select form-select-lg">
+                            <option value="text">Text Options</option>
+                            <option value="image">Image Options</option>
+                        </select>
+                    </div>
+
+                    <div id="text_options">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Option A</label>
+                                <input type="text" name="option_a" class="form-control">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Option B</label>
+                                <input type="text" name="option_b" class="form-control">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Option C</label>
+                                <input type="text" name="option_c" class="form-control">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Option D</label>
+                                <input type="text" name="option_d" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="image_options" style="display:none;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Option A Image</label>
+                                <input type="file" name="option_a_image" class="form-control" accept="image/*">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Option B Image</label>
+                                <input type="file" name="option_b_image" class="form-control" accept="image/*">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Option C Image</label>
+                                <input type="file" name="option_c_image" class="form-control" accept="image/*">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Option D Image</label>
+                                <input type="file" name="option_d_image" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">Correct Answer</label>
+                            <select name="correct_answer" class="form-select form-select-lg" required>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label fw-bold">Marks</label>
+                            <input type="number" name="marks" class="form-control form-control-lg" step="0.1" value="1.0" min="0.1" required>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <a href="{% url 'controller_admin:exam_detail' exam.id %}" class="btn btn-secondary btn-lg me-3">Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-lg px-5">Add Question</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('option_type').addEventListener('change', function() {
+        const textOpts = document.getElementById('text_options');
+        const imageOpts = document.getElementById('image_options');
+        if (this.value === 'text') {
+            textOpts.style.display = 'block';
+            imageOpts.style.display = 'none';
+        } else {
+            textOpts.style.display = 'none';
+            imageOpts.style.display = 'block';
+        }
+    });
+</script>
+{% endblock %}

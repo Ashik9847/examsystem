@@ -1,0 +1,54 @@
+{% extends 'controller_admin/base.html' %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="row mb-5">
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-primary p-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">Total Categories</h5>
+                    <h2 class="mb-0 mt-2">{{ categories_count }}</h2>
+                </div>
+                <i class="fas fa-folder-open fa-3x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-success p-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">Total Exams</h5>
+                    <h2 class="mb-0 mt-2">{{ exams_count }}</h2>
+                </div>
+                <i class="fas fa-file-alt fa-3x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-info p-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">Total Attempts</h5>
+                    <h2 class="mb-0 mt-2">{{ attempts_count }}</h2>
+                </div>
+                <i class="fas fa-users fa-3x opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="text-center">
+    <h4 class="mb-4 text-muted">Quick Actions</h4>
+    <a href="{% url 'controller_admin:category_list' %}" class="btn btn-primary btn-lg px-5 py-3 me-4 shadow">
+        <i class="fas fa-cogs me-2"></i> Manage Exams
+    </a>
+    <a href="{% url 'controller_admin:attempt_list' %}" class="btn btn-success btn-lg px-5 py-3 shadow">
+        <i class="fas fa-chart-bar me-2"></i> View Results
+    </a>
+</div>
+{% endblock %}

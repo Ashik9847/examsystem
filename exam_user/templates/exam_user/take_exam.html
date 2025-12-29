@@ -1,0 +1,187 @@
+{% extends 'exam_user/base.html' %}
+{% block title %}Taking: {{ attempt.exam.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <!-- Exam Header -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center py-4">
+                    <h2 class="fw-bold text-primary mb-3">{{ attempt.exam.name }}</h2>
+                    <div class="row justify-content-center">
+                        <div class="col-md-4">
+                            <p class="mb-1"><strong>Attempt ID:</strong></p>
+                            <code class="fs-5 bg-light px-3 py-2 rounded">{{ attempt.attempt_id }}</code>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="mb-1"><strong>Time Remaining:</strong></p>
+                            <h3 id="timer" class="text-danger fw-bold">00:00</h3>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="mb-1"><strong>Questions:</strong></p>
+                            <span class="fs-5">{{ questions|length }} / {{ attempt.exam.number_of_questions }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exam Form -->
+            <form method="post" id="exam_form">
+                {% csrf_token %}
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        {% for question in questions %}
+                        <div class="question-block mb-5 p-4 rounded bg-light border-start border-primary border-4">
+                            <h5 class="fw-bold mb-4">
+                                Question {{ forloop.counter }} of {{ questions|length }}
+                                <span class="badge bg-secondary float-end">Marks: {{ question.marks }}</span>
+                            </h5>
+                            <p class="lead">{{ question.question_text }}</p>
+
+                            <div class="row mt-4">
+                                {% if question.option_type == 'text' %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="question_{{ question.id }}" value="A"
+                                                   {% if existing_answers.question.id == "A" %}checked{% endif %}>
+                                            <label class="form-check-label fs-5 py-3 px-4 rounded border bg-white shadow-sm">
+                                                <strong>A)</strong> {{ question.option_a }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="question_{{ question.id }}" value="B"
+                                                   {% if existing_answers.question.id == "B" %}checked{% endif %}>
+                                            <label class="form-check-label fs-5 py-3 px-4 rounded border bg-white shadow-sm">
+                                                <strong>B)</strong> {{ question.option_b }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="question_{{ question.id }}" value="C"
+                                                   {% if existing_answers.question.id == "C" %}checked{% endif %}>
+                                            <label class="form-check-label fs-5 py-3 px-4 rounded border bg-white shadow-sm">
+                                                <strong>C)</strong> {{ question.option_c }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="question_{{ question.id }}" value="D"
+                                                   {% if existing_answers.question.id == "D" %}checked{% endif %}>
+                                            <label class="form-check-label fs-5 py-3 px-4 rounded border bg-white shadow-sm">
+                                                <strong>D)</strong> {{ question.option_d }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <!-- Image Options -->
+                                    {% if question.option_a_image %}
+                                    <div class="col-md-6 mb-4 text-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="question_{{ question.id }}" value="A"
+                                                   {% if existing_answers.question.id == "A" %}checked{% endif %}>
+                                            <label class="d-block mt-2">
+                                                <strong class="fs-4 mb-2">A)</strong><br>
+                                                <img src="{{ question.option_a_image.url }}" class="img-fluid rounded shadow" style="max-height: 300px;">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if question.option_b_image %}
+                                    <div class="col-md-6 mb-4 text-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="question_{{ question.id }}" value="B"
+                                                   {% if existing_answers.question.id == "B" %}checked{% endif %}>
+                                            <label class="d-block mt-2">
+                                                <strong class="fs-4 mb-2">B)</strong><br>
+                                                <img src="{{ question.option_b_image.url }}" class="img-fluid rounded shadow" style="max-height: 300px;">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if question.option_c_image %}
+                                    <div class="col-md-6 mb-4 text-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="question_{{ question.id }}" value="C"
+                                                   {% if existing_answers.question.id == "C" %}checked{% endif %}>
+                                            <label class="d-block mt-2">
+                                                <strong class="fs-4 mb-2">C)</strong><br>
+                                                <img src="{{ question.option_c_image.url }}" class="img-fluid rounded shadow" style="max-height: 300px;">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if question.option_d_image %}
+                                    <div class="col-md-6 mb-4 text-center">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" 
+                                                   name="question_{{ question.id }}" value="D"
+                                                   {% if existing_answers.question.id == "D" %}checked{% endif %}>
+                                            <label class="d-block mt-2">
+                                                <strong class="fs-4 mb-2">D)</strong><br>
+                                                <img src="{{ question.option_d_image.url }}" class="img-fluid rounded shadow" style="max-height: 300px;">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="card-footer text-center py-4">
+                        <small class="text-muted d-block mb-3">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Once submitted, you cannot change your answers.
+                        </small>
+                        <button type="submit" name="submit" class="btn btn-success btn-lg px-5 shadow">
+                            <i class="fas fa-paper-plane me-2"></i> Submit Exam
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let secondsLeft = {{ remaining_seconds }};
+    const timerDisplay = document.getElementById('timer');
+
+    function updateTimer() {
+        if (secondsLeft <= 0) {
+            alert('Time is up! Your exam will be submitted automatically.');
+            document.getElementById('exam_form').submit();
+            return;
+        }
+
+        const mins = Math.floor(secondsLeft / 60);
+        const secs = secondsLeft % 60;
+        timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        if (secondsLeft <= 300) {
+            timerDisplay.classList.add('text-danger', 'fw-bold');
+        }
+
+        secondsLeft--;
+        setTimeout(updateTimer, 1000);
+    }
+
+    updateTimer();
+</script>
+{% endblock %}
